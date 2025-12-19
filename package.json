@@ -1,0 +1,24 @@
+{
+    "name": "@cmrweb/stripe-bundle",
+    "version": "1.0.0",
+    "symfony": {
+        "controllers": {
+            "slug": {
+                "main": "dist/controller.js",
+                "fetch": "eager",
+                "enabled": true,                
+                "autoimport": {
+                    "@cmrweb/stripe-bundle/controllers/stripe_controller.js": true
+                }
+            }
+        },
+        "importmap": {
+            "@hotwired/stimulus": "^3.0.0",
+            "@stripe/stripe-js": "8.4.0"
+        }
+    },
+    "peerDependencies": {
+        "@hotwired/stimulus": "^3.0.0",
+        "@stripe/stripe-js": "8.4.0"
+    }
+}

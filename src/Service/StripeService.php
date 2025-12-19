@@ -61,18 +61,21 @@ class StripeService
         return $this->serializer->denormalize($this->stripeClient->products->retrieve($product->getId())->toArray(), Product::class);
     }
 
+    /**
+     * @param Customer $customer
+     * @param Product[] $cart
+     */
     public function createCheckoutSession(Customer $customer, array $cart)
-    {  
-        $subscription = false;
+    {   
         $cart = [
             'customer' => $customer->getId(),
             'line_items' => [...$cart],
-            'mode' => $subscription ? 'subscription' : 'payment',
+            'mode' => 'payment',
             "payment_method_types" => [
                 "card"
             ],
             'ui_mode' => 'embedded',
-            'return_url' => $this->returnUrl.'/{CHECKOUT_SESSION_ID}', // add url in service
+            'return_url' => $this->returnUrl.'/{CHECKOUT_SESSION_ID}'
         ];
 
         return $this->stripeClient->checkout->sessions->create($cart);

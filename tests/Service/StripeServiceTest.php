@@ -9,6 +9,7 @@ use Cmrweb\StripeBundle\Model\Price;
 use Cmrweb\StripeBundle\Model\Product;
 use Cmrweb\StripeBundle\Service\StripeService;
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Depends;
 use Stripe\Customer as StripeCustomer;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
@@ -23,29 +24,35 @@ class StripeServiceTest extends KernelTestCase
     }
 
     #[DataProvider('customerProvider')]
-    public function testCustomer(Customer $customer): void
+    public function testCreateCustomer(Customer $customer): void
     {
-
         $this->assertInstanceOf(StripeService::class, $this->stripeService);
 
         $stripeCustomer = $this->stripeService->createCustomer($customer);
         $this->assertInstanceOf(Customer::class, $stripeCustomer);
-        $this->assertNotNull($customer->getId());
+        $this->assertNotNull($customer->getId()); 
 
-        $stripeCustomer1 = $this->stripeService->getCustomer($customer);
-        $this->assertInstanceOf(Customer::class, $stripeCustomer1);
-
+        $stripeCustomer = $this->stripeService->getCustomer($customer);
+        $this->assertInstanceOf(Customer::class, $stripeCustomer);
         restore_exception_handler();
     }
 
-    public function testGetProduct(): void 
-    {
-        $product = $this->stripeService->getProduct((new Product)->setId('prod_TYrGf8leiagyTz'))->setDefaultPrice('price_1SbipmFzRRUZwQJRHJ2OAtNV');
-        $price =  $this->stripeService->getPrice((new Price)->setId('price_1SbipmFzRRUZwQJRHJ2OAtNV'));
-        // dd($product, $price);
-        $this->assertNotNull($product->getDefaultPrice());
+    public function testCreateProduct(): void
+    { 
+        $product = $this->stripeService->createProduct((new Product)->setName('produit 1')
+        ->setDescription('mon produit 1')
+        ->setActive(true)
+        ->addPrice((new Price)->setUnitAmount(2000)));
+ 
+        $this->assertNotNull($product->getId()); 
+        $this->assertNotNull($product->getPrices()->first()->getUnitAmount()); 
+
+        $product = $this->stripeService->getProduct($product);
+        $price =  $this->stripeService->getPrice((new Price)->setId($product->getDefaultPrice()));
         
-        // create checkout session
+        $this->assertNotNull($product->getDefaultPrice());
+        $this->assertSame($price->getId(), $product->getDefaultPrice());
+        
         restore_exception_handler();
     }
 
@@ -72,25 +79,11 @@ class StripeServiceTest extends KernelTestCase
         restore_exception_handler();
     }
 
-    public function testCreateProduct(): void
-    { 
-        $product = $this->stripeService->createProduct((new Product)->setName('produit 1')
-        ->setDescription('mon produit 1')
-        ->setActive(true)
-        ->addPrice((new Price)->setUnitAmount(2000)));
- 
-        $this->assertNotNull($product->getId()); 
-        $this->assertNotNull($product->getPrices()->first()->getUnitAmount());
-
-        restore_exception_handler();
-    }
-
     public static function customerProvider(): array
     {
         return [
             "cmrweb" => [
-                (new Customer())
-                ->setId('cus_TTFlyOfxdCrVd0')
+                (new Customer()) 
                 ->setEmail("cmrweb@example.com")
                 ->setName("cmrweb stripe")
                 ->setPhone("0600000000")

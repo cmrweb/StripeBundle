@@ -37,9 +37,8 @@ class StripeService
 
     public function createCustomer(Customer $customer): Customer
     {
-        if (null === $customer->getId()) {
-            $customerData = $this->serializer->normalize($customer);
-            $stripeCustomer = $this->stripeClient->customers->create($customerData);
+        if (null === $customer->getId()) { 
+            $stripeCustomer = $this->stripeClient->customers->create($customer->toArray());
             $customer->setId($stripeCustomer->id);
             return $customer;
         }

@@ -23,4 +23,7 @@ services:
     Cmrweb\StripeBundle\Service\StripeService:
         arguments:
             $returnUrl: '%cmrweb.stripe.return.url%'
-            
+    Cmrweb\StripeBundle\Kernel:
+        arguments:
+            $environment: '%kernel.environment%'
+            $debug: '%kernel.debug%'

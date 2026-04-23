@@ -4,7 +4,7 @@ namespace Cmrweb\StripeBundle\Service;
  
 use Cmrweb\StripeBundle\Model\Customer;
 use Cmrweb\StripeBundle\Model\Price;
-use Cmrweb\StripeBundle\Model\Product; 
+use Cmrweb\StripeBundle\Model\Product;
 use Stripe\StripeClient;
 use Symfony\Component\PropertyInfo\Extractor\PhpDocExtractor;
 use Symfony\Component\PropertyInfo\Extractor\ReflectionExtractor;
@@ -16,7 +16,6 @@ use Symfony\Component\Serializer\Normalizer\ArrayDenormalizer;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\Serializer\NameConverter\CamelCaseToSnakeCaseNameConverter;
-use Symfony\Component\Serializer\NameConverter\SnakeCaseToCamelCaseNameConverter;
 use Symfony\Component\Serializer\Serializer;
 
 class StripeService
@@ -29,7 +28,15 @@ class StripeService
         protected readonly ParameterBagInterface $param
     ) {
         $propertyInfo = new PropertyInfoExtractor([], [new PhpDocExtractor(), new ReflectionExtractor()]);
-        $normalizers = [new ObjectNormalizer(new ClassMetadataFactory(new AttributeLoader()), new SnakeCaseToCamelCaseNameConverter(), null, $propertyInfo), new ArrayDenormalizer(new ClassMetadataFactory(new AttributeLoader()), new CamelCaseToSnakeCaseNameConverter(), null, $propertyInfo)];
+        $normalizers = [
+            new ObjectNormalizer(
+                new ClassMetadataFactory(new AttributeLoader()),
+                new CamelCaseToSnakeCaseNameConverter(),
+                null,
+                $propertyInfo
+            ),
+            new ArrayDenormalizer(),
+        ];
         $this->serializer = new Serializer($normalizers, [new JsonEncoder()]);
 
         $this->stripeClient = new StripeClient($param->get('cmrweb.stripe.key.private'));

@@ -1,0 +1,27 @@
+parameters:
+    cmrweb.stripe.key.public: '%env(default::STRIPE_PUBLIC)%'
+    cmrweb.stripe.key.private: '%env(default::STRIPE_PRIVATE)%'
+    cmrweb.stripe.return.url: '%env(default::STRIPE_RETURN_URL)%'
+
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+        public: false
+
+    Cmrweb\StripeBundle\Service\StripeService:
+        arguments:
+            $returnUrl: '%cmrweb.stripe.return.url%'
+        public: true
+
+    Cmrweb\StripeBundle\Maker\StripeCartComponentCommand:
+        tags:
+            - { name: maker.command }
+
+    stripe.client:
+        class: 'Stripe\StripeClient'
+        arguments:
+            - '%cmrweb.stripe.key.private%'
+        public: true
+
+    Stripe\StripeClient: '@stripe.client'

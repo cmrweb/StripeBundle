@@ -1,0 +1,9 @@
+# À importer dans config/routes.yaml de votre application :
+#
+#   cmrweb_stripe_api:
+#       resource: '@StripeBundle/Controller/Api/'
+#       type: attribute
+#
+cmrweb_stripe_api:
+    resource: '@StripeBundle/Controller/Api/'
+    type: attribute

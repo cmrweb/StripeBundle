@@ -18,8 +18,9 @@ use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\Serializer\NameConverter\CamelCaseToSnakeCaseNameConverter;
 use Symfony\Component\Serializer\NameConverter\SnakeCaseToCamelCaseNameConverter;
 use Symfony\Component\Serializer\Serializer;
+use Cmrweb\StripeBundle\Contract\StripeServiceInterface;
 
-class StripeService
+class StripeService implements StripeServiceInterface
 {
     private StripeClient $stripeClient;
     protected Serializer $serializer;
@@ -64,7 +65,7 @@ class StripeService
      * @param Customer $customer
      * @param Product[] $cart
      */
-    public function createCheckoutSession(Customer $customer, array $cart)
+    public function createCheckoutSession(Customer $customer, array $cart): mixed
     {   
         $cart = [
             'customer' => $customer->getId(),
@@ -80,7 +81,7 @@ class StripeService
         return $this->stripeClient->checkout->sessions->create($cart);
     }
 
-    public function createPaymentLink(string $label, int $amount, int $quantity = 1)
+    public function createPaymentLink(string $label, int $amount, int $quantity = 1): mixed
     {
         return $this->stripeClient->paymentLinks->create([
             'line_items' => [

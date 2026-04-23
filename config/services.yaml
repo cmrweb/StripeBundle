@@ -7,6 +7,7 @@ parameters:
     cmrweb.stripe.key.public: '%env(STRIPE_PUBLIC)%'
     cmrweb.stripe.key.private: '%env(STRIPE_PRIVATE)%'
     cmrweb.stripe.return.url: '%env(STRIPE_RETURN_URL)%'
+    cmrweb.stripe.api_enabled: true
 services:
     # default configuration for services in *this* file
     _defaults:
@@ -23,6 +24,11 @@ services:
     Cmrweb\StripeBundle\Service\StripeService:
         arguments:
             $returnUrl: '%cmrweb.stripe.return.url%'
+
+    # Alias de l'interface vers l'implémentation concrète
+    # Les applications peuvent remplacer cette implémentation via leur propre services.yaml
+    Cmrweb\StripeBundle\Contract\StripeServiceInterface: '@Cmrweb\StripeBundle\Service\StripeService'
+
     Cmrweb\StripeBundle\Kernel:
         arguments:
             $environment: '%kernel.environment%'
